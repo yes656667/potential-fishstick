@@ -5,10 +5,12 @@
 
 #include "itoSpr.h"
 #include "Button.h"
+#include "Animation.h"
+#include "primes.h"
 
-int main(int argc, char *argv[])
+int main(int argc,char *argv[])
 {
-    auto window = sf::RenderWindow(sf::VideoMode({1600, 900}), "CMake SFML Project");
+    auto window = sf::RenderWindow(sf::VideoMode({1600, 900}),"CMake SFML Project");
     window.setFramerateLimit(144);
     window.setVerticalSyncEnabled(true);
     sf::Sprite comma(numSheet);
@@ -18,26 +20,28 @@ int main(int argc, char *argv[])
     std::vector<sf::Sprite> xNum;
     std::vector<sf::Sprite> yNum;
     //window.setMouseCursorGrabbed(true);
-    sf::Sprite b1(buttonTextures);
-    b1.setTextureRect(sf::IntRect({{0,0},{240,144}}));
+    auto b1 = std::make_shared<AniObj>(Animation(1,1,{{0,0},{240,144}},1),sf::Vector2f(400,200), 1, 1);
+    auto b2 = std::make_shared<AniObj>(Animation(1,1,{{0,0},{240,144}},1),sf::Vector2f(600,300),2,1);
+    auto b3 = std::make_shared<AniObj>(Animation(1,1,{{0,144},{240,144}},1),sf::Vector2f(400,200),1,2);
+    auto b4 = std::make_shared<AniObj>(Animation(1,1,{{0,144},{240,144}},1),sf::Vector2f(600,300),2,2);
+    auto b5 = std::make_shared<AniObj>(Animation(1,1,{{0,288},{240,144}},1),sf::Vector2f(400,200),1,3);
+    auto b6 = std::make_shared<AniObj>(Animation(1,1,{{0,288},{240,144}},1),sf::Vector2f(600,300),2,3);
     int count = 0;
-    std::unique_ptr<uiButton> pB = std::make_unique<uiButton>(sf::FloatRect({{400,200},{240,144}}),1,[&count](){w(count);},b1);
-    std::unique_ptr<uiButton> pB2 = std::make_unique<uiButton>(sf::FloatRect({{600,300},{240,144}}),2,[&count](){w1(count);},b1);
-    b1.setTextureRect(sf::IntRect({0,144},{240,144}));
-    b1.setPosition({400,200});
-    pB.get()->hoverSprite = b1;
-    b1.setPosition({600,300});
-    pB2.get()->hoverSprite = b1;
-    b1.setTextureRect(sf::IntRect({0,288},{240,144}));
-    b1.setPosition({400,200});
-    pB.get()->clickSprite = b1;
-    b1.setPosition({600,300});
-    pB2.get()->clickSprite = b1;
-    activeButtons.insert(std::move(pB));
-    activeButtons.insert(std::move(pB2));
+    Animation animation(2,8,{{0,0},{39,53}},0.25);
+    auto darkness = std::make_shared<AniObj>(animation,sf::Vector2f(666,247));
+    addAnimation(darkness);
+    std::unique_ptr<uiButton> pB = std::make_unique<uiButton>(sf::FloatRect({{400,200},{240,144}}),1,[&count](){w(count);},b1, 0);
+    std::unique_ptr<uiButton> pB2 = std::make_unique<uiButton>(sf::FloatRect({{600,300},{240,144}}),2,[&count](){w1(count);},b2, 0);
+    pB.get()->hoverSprite = b3;
+    pB2.get()->hoverSprite = b4;
+    pB.get()->clickSprite = b5;
+    pB2.get()->clickSprite = b6;
+    addButton(std::move(pB));
+    addButton(std::move(pB2));
     int mlcx = -1,mlcy = -1;
     std::vector<sf::Sprite> countInt;
     bool mouseDown = false;
+    startTime = std::chrono::steady_clock::now();
     while(window.isOpen())
     {
 
@@ -74,6 +78,18 @@ int main(int argc, char *argv[])
         xNum.insert(xNum.end(),comma);
         xNum.insert(xNum.end(),yNum.begin(),yNum.end());
         */
+        if(isPrime(count))
+        {
+            if(!darkness->isActive())
+            {
+                addAnimation(darkness);
+            }
+        }
+        else if(darkness->isActive())
+        {
+            removeAnimation(darkness);
+        }
+        diffTime = std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::steady_clock::now()-startTime);
         countInt = itoSpr(count,32);
         drawCentered(countInt,mx,my);
         if(mlcx != -1)
@@ -97,13 +113,17 @@ int main(int argc, char *argv[])
             checkHover(mx,my);
         }
         window.clear();
-        for(const std::unique_ptr<Button> &b : activeButtons)
+        /*for(std::set<std::unique_ptr<Button>>::reverse_iterator b = activeButtons.rbegin(); b != activeButtons.rend(); b++)
         {
-            auto tempButton = dynamic_cast<uiButton*>(b.get());
+            auto tempButton = dynamic_cast<uiButton*>((*b).get());
             if(tempButton)
             {
-                window.draw(tempButton->sprite);
+                window.draw(tempButton->sprite.getSprite());
             }
+        }*/
+        for(std::set<std::shared_ptr<AniObj>>::iterator it = activeAnimations.begin(); it != activeAnimations.end(); it++)
+        {
+            window.draw(it->get()->getSprite());
         }
         for(sf::Sprite s : countInt)
         {

@@ -29,7 +29,14 @@ void drawCentered(std::vector<sf::Sprite> &sprites, int x, int y)
 		xSum += int(spr.getTextureRect().size.x)/1.5;
 	}
 	float count = 0;
-	if(x < 54 && y >= 100 || x < 42 && y >= 10 || x < 30)
+	for(sf::Sprite &spr : sprites)
+	{
+		int sprx = int(spr.getTextureRect().size.x);
+		int spry = int(spr.getTextureRect().size.y);
+		spr.setPosition({float(x-xSum/2+count), float(y-spry)});
+		count += sprx/1.5;
+	}
+	/*if(x < 54 && y >= 100 || x < 42 && y >= 10 || x < 30)
 	{
 		for(sf::Sprite &spr : sprites)
 		{
@@ -65,5 +72,5 @@ void drawCentered(std::vector<sf::Sprite> &sprites, int x, int y)
 		{
 			spr.move({0,45});
 		}
-	}
+	}*/
 }

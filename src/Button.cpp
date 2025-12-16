@@ -3,13 +3,11 @@
 #include <set>
 #include "Button.h"
 
-
-sf::Texture buttonTextures("sprites/buttonSheet1.png");
-Button::Button(sf::FloatRect h,int l,std::function<void()> e):hitbox(h),layer(l),ex(e)
+Button::Button(sf::FloatRect h,int l, std::function<void()> e, int i,bool ac):hitbox(h),layer(l),ex(e)
 {
 }
 
-uiButton::uiButton(sf::FloatRect h,int l,std::function<void()> e,sf::Sprite s,bool defaultSpr):
+uiButton::uiButton(sf::FloatRect h,int l,std::function<void()> e,std::shared_ptr<AniObj> s,int i,bool defaultSpr, bool ac):
     Button(h,l,e),
     sprite(s),
     defSprite(s),
@@ -17,11 +15,12 @@ uiButton::uiButton(sf::FloatRect h,int l,std::function<void()> e,sf::Sprite s,bo
     clickSprite(s){
     if(defaultSpr)
     {
-        sprite.setPosition(hitbox.position);
-        defSprite.setPosition(hitbox.position);
-        hoverSprite.setPosition(hitbox.position);
-        clickSprite.setPosition(hitbox.position);
+        sprite->setPosition(hitbox.position);
+        defSprite->setPosition(hitbox.position);
+        hoverSprite->setPosition(hitbox.position);
+        clickSprite->setPosition(hitbox.position);
     }
+    addAnimation(s);
 }
 std::set<std::unique_ptr<Button>,buttonSort> activeButtons;
 Button* activeButton = nullptr;
@@ -34,7 +33,7 @@ bool buttonSort::operator()(const std::unique_ptr<Button> &a, const std::unique_
         if(a->hitbox.position.x == b->hitbox.position.x) return a->hitbox.position.y < b->hitbox.position.y;
         else return a->hitbox.position.x < b->hitbox.position.x;
     }
-    return a->layer > b->layer;
+    return a->layer < b->layer;
 }
 
 void w(int &wx){
@@ -44,7 +43,7 @@ void w1(int &wx){
     std::cout << --wx << '\n';
 }
 void checkButtons(int x, int y){
-    for(auto it = activeButtons.begin(); it != activeButtons.end(); it++){
+    for(auto it = activeButtons.rbegin(); it != activeButtons.rend(); it++){
         if((**it).hitbox.contains({float(x),float(y)}))
         {
             activeButton = it->get();
@@ -56,7 +55,7 @@ void checkButtons(int x, int y){
 }
 void checkHover(int x,int y)
 {
-    for(auto it = activeButtons.begin(); it != activeButtons.end(); it++){
+    for(auto it = activeButtons.rbegin(); it != activeButtons.rend(); it++){
         if((**it).hitbox.contains({float(x),float(y)}))
         {
             auto tempButton2 = dynamic_cast<uiButton*>((*it).get());
@@ -70,5 +69,13 @@ void checkHover(int x,int y)
         }
     }
 }
-
-
+void removeButton(Button* b)
+{
+    std::unique_ptr<Button> stale(b);
+    activeButtons.erase(stale);
+    stale.release();
+}
+void addButton(std::unique_ptr<Button> b)
+{
+    activeButtons.insert(std::move(b));
+}
