@@ -1,5 +1,10 @@
 #include "primes.h"
 
+/*
+*Just a prime checker, you know how this works.
+* (this needs to check one at a time, in increments of 1)
+*/
+
 int64_t max = 1;
 std::unordered_map<int64_t,bool> primes;
 std::vector<int64_t> primeList;

@@ -15,6 +15,7 @@ public:
     int layer;
     bool active;
     std::function<void()> ex;
+    bool hungry = true;
     Button(sf::FloatRect h,int l, std::function<void()> e,int i=convid, bool ac=true);
     void setClicked(bool clicked) { if(clicked == isClicked) return; isClicked = clicked; update(); }
     void setHovered(bool hovered) { if(hovered == isHovered) return; isHovered = hovered; update(); }

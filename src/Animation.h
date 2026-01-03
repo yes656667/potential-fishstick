@@ -26,8 +26,9 @@ private:
 	int id;//id for drawing (draw set sorts by layer, then id)
 	mutable Animation animation;
 	mutable bool active;
+	mutable sf::Vector2f scale;
 public:
-	AniObj(Animation a,sf::Vector2f p={0,0},int l=0,int i=convid,bool ac=true);
+	AniObj(Animation a,sf::Vector2f p={0,0},int l=0,int i=convid,sf::Vector2f scale_={1,1},bool ac=true);
 	void setPosition(sf::Vector2f newh);
 	sf::Sprite getSprite(float xOff=0,float yOff=0) const;
 	int getLayer() const;

@@ -1,5 +1,9 @@
 #include "itoSpr.h"
 
+/*
+* Turns a sprite into numbers.
+*/
+
 sf::Texture numSheet("sprites/numberTest1.png");
 sf::Sprite dash(numSheet);
 std::vector<sf::Sprite> itoSpr(int x, int size)

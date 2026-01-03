@@ -3,7 +3,12 @@
 #include <set>
 #include "Button.h"
 
-Button::Button(sf::FloatRect h,int l, std::function<void()> e, int i,bool ac):hitbox(h),layer(l),ex(e)
+/*
+A button is a rectangle on screen that 
+*/
+
+
+Button::Button(sf::FloatRect h,int l, std::function<void()> e, int i,bool ac):hitbox(h),layer(l),ex(e),active(ac)
 {
 }
 
@@ -48,8 +53,8 @@ void checkButtons(int x, int y){
         {
             activeButton = it->get();
             activeButton->setClicked(true);
-            (**it).ex();
-            break;
+            (*it)->ex();
+            if((*it)->hungry) break;
         }
     }
 }
