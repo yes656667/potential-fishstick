@@ -28,7 +28,7 @@ void uiButton::setSprites(std::shared_ptr<AniObj> &s1, std::shared_ptr<AniObj> &
 {
 	if(sprite)removeAnimation(sprite);
 	sprite = s1;
-	addAnimation(sprite);
+	if(active)addAnimation(sprite);
 	defSprite = s1;
 	hoverSprite = s2;
 	clickSprite = s3;
@@ -85,13 +85,18 @@ void checkHover(int x,int y)
 }
 void removeButton(Button* b)
 {
+	auto tempButton2 = dynamic_cast<uiButton*>(b);
+	if(tempButton2 && tempButton2->sprite) removeAnimation(tempButton2->sprite);
     std::unique_ptr<Button> stale(b);
 	if(activeButtons.erase(stale))
 	{
+
 	}
     stale.release();
 }
 void addButton(std::unique_ptr<Button> b)
 {
+	auto tempButton2 = dynamic_cast<uiButton*>(b.get());
+	if(tempButton2 && tempButton2->sprite) addAnimation(tempButton2->sprite);
     activeButtons.insert(std::move(b));
 }

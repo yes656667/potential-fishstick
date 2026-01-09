@@ -12,6 +12,6 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(main src/main.cpp "src/itoSpr.cpp" "src/Button.cpp" "src/Animation.cpp" "src/primes.cpp" "src/Set.cpp")
+add_executable(main src/main.cpp "src/Button.cpp" "src/Animation.cpp" "src/primes.cpp" "src/Set.cpp")
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics PRIVATE SFML::Audio PRIVATE SFML::Network)

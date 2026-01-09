@@ -14,8 +14,7 @@ int main(int argc, char* argv[])
 {
     //todo: make window resizable and good
     sf::RenderWindow window(sf::VideoMode({1921, 1080}), "CMake SFML Project", sf::Style::None, sf::State::Windowed);
-    //window.setVerticalSyncEnabled(true); //vsync
-	window.setFramerateLimit(144);
+    window.setVerticalSyncEnabled(true); //vsync
 
 	srand(time(0));
     /*sf::Sprite comma(numSheet);
@@ -86,6 +85,7 @@ int main(int argc, char* argv[])
 
     startTime = std::chrono::steady_clock::now();
 	shuffle();
+	setCardOrder.resize(12);
     while(window.isOpen())
     {
 

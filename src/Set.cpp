@@ -114,7 +114,6 @@ void removeSet()
 {
 	int cardsRemoved = 0;
 	int idsToRemove[3] = {-1, -1, -1};
-	
 	for(int i = 0; i < 12 && i < setCardOrder.size() && cardsRemoved < 3; i++)
 	{
 		if(setCardOrder[i] == activeCards[cardsRemoved]->id)
@@ -131,11 +130,7 @@ void removeSet()
 			cardsRemoved++;
 		}
 	}
-	for(int i = 0; i < 3; i++)
-	{
-		removeAnimation(activeCards[i]->button.sprite);
-	}
-	if(setCardOrder.size() >= 12) return;
+	if(setCardOrder.size() > 12) return;
 	for(int i = 0; i < 3; i++)
 	{
 		int j = 0;
@@ -150,12 +145,16 @@ void updateCards()
 {
 	activeButton = nullptr;
 	activeHoverButton = nullptr;
-	for(int i = 0; i < 12 && i < setCardOrder.size(); i++)
+	for(int i = 0; i < 12; i++)
 	{
 		if(openCards[i].id > -1)
 		{
 			removeButton(&(openCards[i].button));
 		}
+	}
+	for(int i = 0; i < 12 && i < setCardOrder.size(); i++)
+	{
+		
 		openCards[i].id = setCardOrder[i];
 		uiButton newButton({{float(540 + i/4*440), float(30+i%4*260)}, {420, 240}}, 2, [](){}, i);
 		AniObj cardAniObj(Animation(Tn::cards, 1, {{(openCards[i].id/9)*105, (openCards[i].id%9)*60}, {105, 60}}, 1), {float(540 + i/4*440), float(30+i%4*260)}, 2, openCards[i].id, {4, 4});
@@ -172,7 +171,7 @@ void updateCards()
 
 void updateHighlights()
 {
-	for(int i = 0; i < 12; i++)
+	for(int i = 0; i < 12 && i < openCards.size(); i++)
 	{
 		AniObj garb(Animation(-1, 1, {{0, 0}, {0, 0}},1), {0, 0}, 1, (openCards[i]).id);
 		removeAnimation(std::make_shared<AniObj>(garb));
