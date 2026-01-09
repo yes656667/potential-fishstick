@@ -85,7 +85,6 @@ int main(int argc, char* argv[])
 
     startTime = std::chrono::steady_clock::now();
 	shuffle();
-	setCardOrder.resize(12);
     while(window.isOpen())
     {
 
