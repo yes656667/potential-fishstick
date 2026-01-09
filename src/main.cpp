@@ -9,7 +9,7 @@
 #include "primes.h"
 #include "Set.h"
 
-float cloudSpeed = 8;
+float cloudSpeed = 7;
 int main(int argc, char* argv[])
 {
     //todo: make window resizable and good
