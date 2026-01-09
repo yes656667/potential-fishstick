@@ -8,33 +8,37 @@ A button is a rectangle on screen that
 */
 
 
-Button::Button(sf::FloatRect h,int l, std::function<void()> e, int i,bool ac):hitbox(h),layer(l),ex(e),active(ac)
+Button::Button(sf::FloatRect h,int l, std::function<void()> e, int i,bool ac):hitbox(h),layer(l),ex(e),id(i),active(ac)
 {
 }
 
-uiButton::uiButton(sf::FloatRect h,int l,std::function<void()> e,std::shared_ptr<AniObj> s,int i,bool defaultSpr, bool ac):
-    Button(h,l,e),
-    sprite(s),
-    defSprite(s),
-    hoverSprite(s),
-    clickSprite(s){
-    if(defaultSpr)
+uiButton::uiButton(sf::FloatRect h,int l,std::function<void()> e,int i, bool ac):
+    Button(h,l,e,i)
     {
-        sprite->setPosition(hitbox.position);
-        defSprite->setPosition(hitbox.position);
-        hoverSprite->setPosition(hitbox.position);
-        clickSprite->setPosition(hitbox.position);
-    }
-    addAnimation(s);
 }
 std::set<std::unique_ptr<Button>,buttonSort> activeButtons;
 Button* activeButton = nullptr;
 Button* activeHoverButton = nullptr;
 
+uiButton::~uiButton()
+{
+	//if(sprite)removeAnimation(sprite);
+}
+void uiButton::setSprites(std::shared_ptr<AniObj> &s1, std::shared_ptr<AniObj> &s2, std::shared_ptr<AniObj> &s3)
+{
+	if(sprite)removeAnimation(sprite);
+	sprite = s1;
+	addAnimation(sprite);
+	defSprite = s1;
+	hoverSprite = s2;
+	clickSprite = s3;
+}
+
 bool buttonSort::operator()(const std::unique_ptr<Button> &a, const std::unique_ptr<Button> &b) const
 {
     if(a->layer == b->layer)
     {
+		if(a->id != b->id) return a->id < b->id;
         if(a->hitbox.position.x == b->hitbox.position.x) return a->hitbox.position.y < b->hitbox.position.y;
         else return a->hitbox.position.x < b->hitbox.position.x;
     }
@@ -48,15 +52,20 @@ void w1(int &wx){
     std::cout << --wx << '\n';
 }
 void checkButtons(int x, int y){
+	std::vector<Button*> buttonsForEx;
     for(auto it = activeButtons.rbegin(); it != activeButtons.rend(); it++){
         if((**it).hitbox.contains({float(x),float(y)}))
         {
             activeButton = it->get();
             activeButton->setClicked(true);
-            (*it)->ex();
+			buttonsForEx.push_back(activeButton);
             if((*it)->hungry) break;
         }
     }
+	for(Button* b : buttonsForEx)
+	{
+		b->ex();
+	}
 }
 void checkHover(int x,int y)
 {
@@ -77,7 +86,9 @@ void checkHover(int x,int y)
 void removeButton(Button* b)
 {
     std::unique_ptr<Button> stale(b);
-    activeButtons.erase(stale);
+	if(activeButtons.erase(stale))
+	{
+	}
     stale.release();
 }
 void addButton(std::unique_ptr<Button> b)

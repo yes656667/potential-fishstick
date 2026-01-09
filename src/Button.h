@@ -16,6 +16,8 @@ public:
     bool active;
     std::function<void()> ex;
     bool hungry = true;
+	bool simple = false;
+	int id;
     Button(sf::FloatRect h,int l, std::function<void()> e,int i=convid, bool ac=true);
     void setClicked(bool clicked) { if(clicked == isClicked) return; isClicked = clicked; update(); }
     void setHovered(bool hovered) { if(hovered == isHovered) return; isHovered = hovered; update(); }
@@ -29,7 +31,7 @@ public:
     std::shared_ptr<AniObj> hoverSprite;
     std::shared_ptr<AniObj> clickSprite;
     void update() override{
-       
+		if(simple) return;
         if(isClicked)
         {
             sprite = clickSprite;
@@ -52,7 +54,10 @@ public:
             removeAnimation(clickSprite);
         }
     }
-    uiButton(sf::FloatRect h,int l, std::function<void()> e,std::shared_ptr<AniObj> s, int i=convid,bool defaultSpr=true, bool ac=true);
+	uiButton(){};
+	~uiButton();
+    uiButton(sf::FloatRect h,int l, std::function<void()> e, int i=convid, bool ac=true);
+	void setSprites(std::shared_ptr<AniObj> &s1, std::shared_ptr<AniObj> &s2, std::shared_ptr<AniObj> &s3);
 };
 struct buttonSort{
     bool operator()(const std::unique_ptr<Button> &a,const std::unique_ptr<Button> &b) const;

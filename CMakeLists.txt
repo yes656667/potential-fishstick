@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 project(CMakeSFMLProject LANGUAGES CXX)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -12,6 +12,6 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(main src/main.cpp "src/itoSpr.cpp" "src/itoSpr.h" "src/Button.h" "src/Button.cpp" "src/Animation.h" "src/Animation.cpp" "src/primes.cpp")
+add_executable(main src/main.cpp "src/itoSpr.cpp" "src/Button.cpp" "src/Animation.cpp" "src/primes.cpp" "src/Set.cpp")
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics PRIVATE SFML::Audio PRIVATE SFML::Network)
