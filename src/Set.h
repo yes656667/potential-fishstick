@@ -30,3 +30,5 @@ void addCard(setCard &s);
 void removeCard(int id);
 extern AniObj lastSet[3];
 extern std::chrono::duration<double> setStartTime;
+extern sf::Text cardsLeftText;
+extern sf::Font font;

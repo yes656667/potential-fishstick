@@ -14,13 +14,20 @@ int cardCount = 0;
 int score = 0;
 int comboCount = 0;
 float curCombo = 1;
+sf::Font font("arial.ttf");
+sf::Text cardsLeftText(font);
 
 namespace setScore{
-	int deficit = -300; //wrong set deficit
-	int gain = 600; // base gain
-	int minTime = 180; //seconds until gain decreases
-	int decRate = 1; //gain dec rate per second
-	int replaceCost = -100; //cost to replace 4 cards
+	int deficit = -100; //wrong set deficit
+	int gain = 500; // base gain
+	int minTime = 120; //seconds until gain decreases
+	int decRate = 0.5; //gain dec rate per second
+	int replaceCost = -50; //cost to replace 4 cards
+}
+
+void updateCardsLeft()
+{
+	cardsLeftText.setString("Cards Left: " + std::to_string(setCardOrder.size()));
 }
 void shuffle()
 {
@@ -39,6 +46,7 @@ void shuffle()
 		setCardOrder[i] = left[num];
 		left.erase(left.begin()+num);
 	}
+	updateCardsLeft();
 	updateCards();
 	updateLastSet();
 }
@@ -116,6 +124,7 @@ void checkCardsSet()
 	updateHighlights();
 	removeSet();
 	updateCards();
+	updateCardsLeft();
 }
 void replace4()
 {

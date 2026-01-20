@@ -84,23 +84,43 @@ int main(int argc, char* argv[])
 	Animation leftHighlight(Tn::longHighlight, 1, {{0, 0}, {105, 240}}, 1);
 	auto leftBar = std::make_shared<AniObj>(leftHighlight, sf::Vector2f(60, 60), 1, -100, sf::Vector2f(4, 4));
 	addAnimation(leftBar);
-	sf::Font font("arial.ttf");
+	
 	sf::Text scoreText(font);
 	scoreText.setCharacterSize(40);
 	scoreText.setPosition({90, 90});
+	sf::Text timeText(font);
+	timeText.setCharacterSize(40);
+	timeText.setPosition({90, 150});
+
+	cardsLeftText.setPosition({90, 210});
+	cardsLeftText.setCharacterSize(40);
 	sf::Text lastSetText(font);
 	lastSetText.setCharacterSize(40);
 	lastSetText.setPosition({180, 850});
 	lastSetText.setString("Last Set: ");
+
 	sf::Text replaceText(font);
 	replaceText.setString("-Replace 4 Cards-");
 	replaceText.setCharacterSize(30);
 	replaceText.setPosition({120, 360});
+
 	Animation replaceAnimation(6, 1, {{0, 0}, {217, 37}}, 1);
 	auto replaceObj = std::make_shared<AniObj>(replaceAnimation, sf::Vector2f(80, 345), 3, 0, sf::Vector2f(1.5,2));
-	std::unique_ptr<uiButton> replaceButton = std::make_unique<uiButton>(sf::FloatRect({80, 345}, {217*1.5, 37*1.5}), 3, [](){replace4(); }, 10);
+	std::unique_ptr<uiButton> replaceButton = std::make_unique<uiButton>(sf::FloatRect({80, 345}, {217*1.5, 37*2}), 3, [](){replace4(); }, 10);
 	replaceButton.get()->setSprites(replaceObj, replaceObj, replaceObj);
 	replaceButton.get()->simple = true;
+
+	sf::Text newGameText(font);
+	newGameText.setString("-New Game-");
+	newGameText.setCharacterSize(30);
+	newGameText.setPosition({100, 460});
+
+	auto newGameObj = std::make_shared<AniObj>(replaceAnimation, sf::Vector2f(80, 445), 3, 1, sf::Vector2f(1, 2));
+	std::unique_ptr<uiButton> newGameButton = std::make_unique<uiButton>(sf::FloatRect({80, 445}, {217, 37*2}), 3, [](){shuffle(); }, 20);
+	newGameButton.get()->setSprites(newGameObj, newGameObj, newGameObj);
+	newGameButton.get()->simple = true;
+
+	addButton(std::move(newGameButton));
 	addButton(std::move(replaceButton));
     //std::unique_ptr<uiButton> pB = std::make_unique<uiButton>(sf::FloatRect({{400,200},{240,144}}),1,[&count](){w(count);}, 0);
     //std::unique_ptr<uiButton> pB2 = std::make_unique<uiButton>(sf::FloatRect({{600,300},{240,144}}),2,[&count](){w1(count);}, 0);
@@ -201,7 +221,10 @@ int main(int argc, char* argv[])
             }
             checkHover(mx,my);
         }
+		if(score < 0) score = 0;
 		scoreText.setString("Score: " + std::to_string(score));
+		timeText.setString("Time: " + std::to_string(int(diffTime.count()-setStartTime.count())) + "s");
+		
         window.clear();
     //    for(std::set<std::unique_ptr<Button>>::reverse_iterator b = activeButtons.rbegin(); b != activeButtons.rend(); b++)
     //    {
@@ -226,6 +249,9 @@ int main(int argc, char* argv[])
 		window.draw(scoreText);
 		window.draw(replaceText);
 		window.draw(lastSetText);
+		window.draw(timeText);
+		window.draw(cardsLeftText);
+		window.draw(newGameText);
         window.display();
 		sf::sleep(std::chrono::microseconds(500));
     }
