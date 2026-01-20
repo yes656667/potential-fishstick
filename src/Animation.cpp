@@ -3,6 +3,11 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
+
+unsigned int windowWidth = 1921;
+unsigned int windowHeight = 1080;
+
+
 /*
 * Animation: 
 * A collection of images that play after one another in succession, located on a spritesheet. Spritesheet iteration is vertical.
@@ -11,7 +16,7 @@
 * A physical object (rectangle) on the screen, using an Animation as the texture.
 */
 
-const int textureCount = 5;
+const int textureCount = 7;
 const sf::Texture masterSheet("sprites/masterSheet.png");
 const sf::Vector2i textures[textureCount] =
 {
@@ -19,7 +24,9 @@ const sf::Vector2i textures[textureCount] =
 	{945,270},
 	{945,0},
 	{0,0},
-{961,0}
+{961,0},
+	{1425,60},
+	{1066,0}
 }; //array for the textures
 
 int convid = 0; //convenient id, used for layer 0 stuff
@@ -105,6 +112,15 @@ bool AniObj::isActive() const
 void AniObj::setActive(bool ac)
 {
 	active = ac;
+}
+bool AniObj::isInFrame(float xOff, float yOff) const
+{
+	sf::Vector2i tr = animation.textureRect.size;
+	if(tr.y*scale.y+pos.y < xOff) return false;
+	if(tr.x*scale.x+pos.x < yOff) return false;
+	if(pos.x > windowWidth+xOff) return false;
+	if(pos.y > windowHeight+yOff) return false;
+	return true;
 }
 void removeAnimation(std::shared_ptr<AniObj> aniobj)
 {

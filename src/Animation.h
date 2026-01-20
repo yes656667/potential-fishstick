@@ -4,13 +4,17 @@
 #include <set>
 #include <memory>
 
+extern unsigned int windowWidth;
+extern unsigned int windowHeight;
+
 namespace Tn{
 	enum TextureList{
 		skylines,
 		skystars,
 		overlay,
 		cards,
-		highlight
+		highlight,
+		longHighlight
 	};
 }
 
@@ -51,6 +55,7 @@ public:
 	bool isActive() const;
 	void setActive(bool ac);
 	void move(float xOff, float yOff);
+	bool isInFrame(float xOff=0, float yOff=0) const;
 };
 struct AniSort{
 	bool operator()(const std::shared_ptr<AniObj> &a,const std::shared_ptr<AniObj> &b) const;

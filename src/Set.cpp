@@ -1,14 +1,32 @@
 #include "Set.h"
 #include <ctime>
 #include <unordered_map>
+#include <algorithm>
+
+Animation blankCard(6, 1, {{0, 37}, {105, 60}}, 1);
+std::chrono::duration<double> setStartTime;
 std::vector<int> setCardOrder;
 setCard* activeCards[3];
+AniObj lastSet[3] = {AniObj(blankCard, sf::Vector2f(80, 800), 3, 100), AniObj(blankCard, sf::Vector2f(200, 800), 3, 200), 
+	AniObj(blankCard, sf::Vector2f(320, 800), 3, 300)};
 std::vector<setCard> openCards(12);
 int cardCount = 0;
+int score = 0;
+int comboCount = 0;
+float curCombo = 1;
 
+namespace setScore{
+	int deficit = -300; //wrong set deficit
+	int gain = 600; // base gain
+	int minTime = 180; //seconds until gain decreases
+	int decRate = 1; //gain dec rate per second
+	int replaceCost = -100; //cost to replace 4 cards
+}
 void shuffle()
 {
 	std::vector<int> left(81);
+	score = 0;
+	setStartTime = diffTime;
 	setCardOrder.resize(81);
 	openCards.resize(12);
 	for(int i = 0; i < 81; i++)
@@ -22,6 +40,7 @@ void shuffle()
 		left.erase(left.begin()+num);
 	}
 	updateCards();
+	updateLastSet();
 }
 void addCard(setCard &s)
 {
@@ -77,6 +96,7 @@ void checkCardsSet()
 			{
 				clearCards();
 				updateHighlights();
+				score += int(setScore::deficit*curCombo);
 				return;
 			}
 		}
@@ -84,9 +104,14 @@ void checkCardsSet()
 		{
 			clearCards();
 			updateHighlights();
+			score += int(setScore::deficit*curCombo);
 			return;
 		}
 	}
+	int totalGain = setScore::gain-std::max(int(setScore::decRate*(diffTime.count()-setStartTime.count()-setScore::minTime)), 0);
+	if(totalGain > 0) score += int(totalGain*curCombo);
+	comboCount++;
+	updateLastSet();
 	clearCards();
 	updateHighlights();
 	removeSet();
@@ -95,6 +120,7 @@ void checkCardsSet()
 void replace4()
 {
 	if(setCardOrder.size() < 15) return;
+	score += int(setScore::replaceCost*curCombo);
 	clearCards();
 	updateHighlights();
 	for(int i = 0; i < 4; i++)
@@ -112,6 +138,7 @@ void replace4()
 }
 void removeSet()
 {
+	
 	int cardsRemoved = 0;
 	int idsToRemove[3] = {-1, -1, -1};
 	for(int i = 0; i < 12 && i < setCardOrder.size() && cardsRemoved < 3; i++)
@@ -139,6 +166,33 @@ void removeSet()
 			if(idsToRemove[i2] < idsToRemove[i]) j++;
 		}
 		setCardOrder.erase(setCardOrder.begin() + idsToRemove[i] - j);
+	}
+}
+void updateLastSet()
+{
+	for(int i = 0; i < 3; i++)
+	{
+		removeAnimation(std::make_shared<AniObj>(lastSet[i]));
+	}
+	if(cardCount == 0)
+	{
+		
+		for(int i = 0; i < 3; i++)
+		{
+			lastSet[i] = AniObj(blankCard, sf::Vector2f(100+i*120, 900), 3, i*100+100);
+		}
+	}
+	else
+	{
+		for(int i = 0; i < 3; i++)
+		{
+			lastSet[i] = AniObj(Animation(Tn::cards, 1, {{(activeCards[i]->id/9)*105, (activeCards[i]->id%9)*60}, {105, 60}}, 1), 
+				sf::Vector2f(100+i*120, 900), 3, i*100+100);
+		}
+	}
+	for(int i = 0; i < 3; i++)
+	{
+		addAnimation(std::make_shared<AniObj>(lastSet[i]));
 	}
 }
 void updateCards()

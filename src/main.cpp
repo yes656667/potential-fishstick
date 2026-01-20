@@ -9,38 +9,50 @@
 #include "primes.h"
 #include "Set.h"
 
+//TODO:
+
+/*
+Additions:
+- Custom Font
+- Combo and Combo Meter
+Changes:
+- Add text and shape support to Animation somehow
+- do vertex array stuff
+*/
+
 float cloudSpeed = 7;
+
 int main(int argc, char* argv[])
 {
-    //todo: make window resizable and good
-    sf::RenderWindow window(sf::VideoMode({1921, 1080}), "CMake SFML Project", sf::Style::None, sf::State::Windowed);
-    window.setVerticalSyncEnabled(true); //vsync
+	//todo: make window resizable and good
+	sf::RenderWindow window(sf::VideoMode({windowWidth, windowHeight}), "CMake SFML Project", sf::Style::None, sf::State::Windowed);
+	window.setVerticalSyncEnabled(true); //vsync
 
 	srand(time(0));
-    /*sf::Sprite comma(numSheet);
-    comma.setTextureRect(sf::IntRect({0, 320}, {16, 16}));
-    dash.setTextureRect(sf::IntRect({0, 336}, {16, 32}));*/
-    /*std::vector<sf::Sprite> xNum;
-    std::vector<sf::Sprite> yNum;*/
-    //window.setMouseCursorGrabbed(true);
+	/*sf::Sprite comma(numSheet);
+	comma.setTextureRect(sf::IntRect({0, 320}, {16, 16}));
+	dash.setTextureRect(sf::IntRect({0, 336}, {16, 32}));*/
+	/*std::vector<sf::Sprite> xNum;
+	std::vector<sf::Sprite> yNum;*/
+	//window.setMouseCursorGrabbed(true);
 
 	/*Animation bDef(1, 1, {{0, 0}, {240, 144}}, 1);
 	Animation bHover(1, 1, {{0, 144}, {240, 144}}, 1);
 	Animation bClick(1, 1, {{0, 288}, {240, 144}}, 1);*/
-    //sprites for the 2 buttons
-    /*auto b1 = std::make_shared<AniObj>(bDef, sf::Vector2f(400, 200), 1, 1);
-    auto b2 = std::make_shared<AniObj>(bDef, sf::Vector2f(600, 300), 2, 1);
-    auto b3 = std::make_shared<AniObj>(bHover, sf::Vector2f(400, 200), 1, 2);
-    auto b4 = std::make_shared<AniObj>(bHover, sf::Vector2f(600, 300), 2, 2);
-    auto b5 = std::make_shared<AniObj>(bClick, sf::Vector2f(400, 200), 1, 3);
-    auto b6 = std::make_shared<AniObj>(bClick, sf::Vector2f(600, 300), 2, 3);*/
+	//sprites for the 2 buttons
+	/*auto b1 = std::make_shared<AniObj>(bDef, sf::Vector2f(400, 200), 1, 1);
+	auto b2 = std::make_shared<AniObj>(bDef, sf::Vector2f(600, 300), 2, 1);
+	auto b3 = std::make_shared<AniObj>(bHover, sf::Vector2f(400, 200), 1, 2);
+	auto b4 = std::make_shared<AniObj>(bHover, sf::Vector2f(600, 300), 2, 2);
+	auto b5 = std::make_shared<AniObj>(bClick, sf::Vector2f(400, 200), 1, 3);
+	auto b6 = std::make_shared<AniObj>(bClick, sf::Vector2f(600, 300), 2, 3);*/
 
-    //int count = 0; // the number that follows
+	//int count = 0; // the number that follows
 
-    //dancing darknessspawn
-    /*Animation dancingd(2, 8, {{0, 0}, {39, 53}}, 0.25);
-    auto darkness = std::make_shared<AniObj>(dancingd, sf::Vector2f(666, 141), 0, 0, sf::Vector2f(3, 3));
-    addAnimation(darkness);*/
+	//dancing darknessspawn
+	/*Animation dancingd(2, 8, {{0, 0}, {39, 53}}, 0.25);
+	auto darkness = std::make_shared<AniObj>(dancingd, sf::Vector2f(666, 141), 0, 0, sf::Vector2f(3, 3));
+	addAnimation(darkness);*/
 
 	Animation bg(Tn::skystars, 1, {{0, 0}, {480, 270}}, 1);
 	auto bgobj = std::make_shared<AniObj>(bg, sf::Vector2f(0, 0), -1, 0, sf::Vector2f(4, 4));
@@ -63,10 +75,33 @@ int main(int argc, char* argv[])
 	addAnimation(skylineobj4);
 	Animation bgo(Tn::overlay, 1, {{0, 0}, {16, 9}}, 1);
 	auto bgoverlay = std::make_shared<AniObj>(bgo, sf::Vector2f(0, 0), -1, 257, sf::Vector2f(120, 120));
-	std::unique_ptr<uiButton> bgButton = std::make_unique<uiButton>(sf::FloatRect({{0, 0}, {1920, 1080}}), 1, [](){replace4(); }, 0);
+	addAnimation(bgoverlay);
+	/*std::unique_ptr<uiButton> bgButton = std::make_unique<uiButton>(sf::FloatRect({{0, 0}, {1920, 1080}}), 1, [](){replace4(); }, 0);
 	bgButton.get()->setSprites(bgoverlay, bgoverlay, bgoverlay);
 	bgButton.get()->simple = true;
-	addButton(std::move(bgButton));
+	addButton(std::move(bgButton));*/
+
+	Animation leftHighlight(Tn::longHighlight, 1, {{0, 0}, {105, 240}}, 1);
+	auto leftBar = std::make_shared<AniObj>(leftHighlight, sf::Vector2f(60, 60), 1, -100, sf::Vector2f(4, 4));
+	addAnimation(leftBar);
+	sf::Font font("arial.ttf");
+	sf::Text scoreText(font);
+	scoreText.setCharacterSize(40);
+	scoreText.setPosition({90, 90});
+	sf::Text lastSetText(font);
+	lastSetText.setCharacterSize(40);
+	lastSetText.setPosition({180, 850});
+	lastSetText.setString("Last Set: ");
+	sf::Text replaceText(font);
+	replaceText.setString("-Replace 4 Cards-");
+	replaceText.setCharacterSize(30);
+	replaceText.setPosition({120, 360});
+	Animation replaceAnimation(6, 1, {{0, 0}, {217, 37}}, 1);
+	auto replaceObj = std::make_shared<AniObj>(replaceAnimation, sf::Vector2f(80, 345), 3, 0, sf::Vector2f(1.5,2));
+	std::unique_ptr<uiButton> replaceButton = std::make_unique<uiButton>(sf::FloatRect({80, 345}, {217*1.5, 37*1.5}), 3, [](){replace4(); }, 10);
+	replaceButton.get()->setSprites(replaceObj, replaceObj, replaceObj);
+	replaceButton.get()->simple = true;
+	addButton(std::move(replaceButton));
     //std::unique_ptr<uiButton> pB = std::make_unique<uiButton>(sf::FloatRect({{400,200},{240,144}}),1,[&count](){w(count);}, 0);
     //std::unique_ptr<uiButton> pB2 = std::make_unique<uiButton>(sf::FloatRect({{600,300},{240,144}}),2,[&count](){w1(count);}, 0);
 	//pB.get()->setSprites(b1, b3, b5);
@@ -166,6 +201,7 @@ int main(int argc, char* argv[])
             }
             checkHover(mx,my);
         }
+		scoreText.setString("Score: " + std::to_string(score));
         window.clear();
     //    for(std::set<std::unique_ptr<Button>>::reverse_iterator b = activeButtons.rbegin(); b != activeButtons.rend(); b++)
     //    {
@@ -180,13 +216,17 @@ int main(int argc, char* argv[])
         
         for(std::set<std::shared_ptr<AniObj>>::iterator it = activeAnimations.begin(); it != activeAnimations.end(); it++)
         {
+			if(!it->get()->isInFrame()) continue;
             window.draw(it->get()->getSprite());
         }
         /*for(sf::Sprite s : countInt)
         {
             window.draw(s);
         }*/
+		window.draw(scoreText);
+		window.draw(replaceText);
+		window.draw(lastSetText);
         window.display();
-		sf::sleep(std::chrono::milliseconds(2));
+		sf::sleep(std::chrono::microseconds(500));
     }
 }
