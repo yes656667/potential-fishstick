@@ -21,7 +21,7 @@ namespace setScore{
 	int deficit = -100; //wrong set deficit
 	int gain = 500; // base gain
 	int minTime = 120; //seconds until gain decreases
-	int decRate = 0.5; //gain dec rate per second
+	float decRate = 0.5; //gain dec rate per second
 	int replaceCost = -50; //cost to replace 4 cards
 }
 
@@ -46,6 +46,7 @@ void shuffle()
 		setCardOrder[i] = left[num];
 		left.erase(left.begin()+num);
 	}
+	setCardOrder.resize(18);
 	updateCardsLeft();
 	updateCards();
 	updateLastSet();
@@ -150,6 +151,7 @@ void removeSet()
 	
 	int cardsRemoved = 0;
 	int idsToRemove[3] = {-1, -1, -1};
+	bool moreThan12 = setCardOrder.size()>12;
 	for(int i = 0; i < 12 && i < setCardOrder.size() && cardsRemoved < 3; i++)
 	{
 		if(setCardOrder[i] == activeCards[cardsRemoved]->id)
@@ -166,7 +168,7 @@ void removeSet()
 			cardsRemoved++;
 		}
 	}
-	if(setCardOrder.size() > 12) return;
+	if(moreThan12) return;
 	for(int i = 0; i < 3; i++)
 	{
 		int j = 0;
